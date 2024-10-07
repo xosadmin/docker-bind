@@ -7,8 +7,6 @@ RUN apt-get update \
 
 FROM ubuntu:focal-20200423
 
-LABEL maintainer="sameer@damagehead.com"
-
 ENV BIND_USER=bind \
     BIND_VERSION=9.16.1 \
     WEBMIN_VERSION=1.941 \
@@ -21,9 +19,11 @@ COPY --from=add-apt-repositories /etc/apt/sources.list /etc/apt/sources.list
 RUN rm -rf /etc/apt/apt.conf.d/docker-gzip-indexes \
  && apt-get update \
  && DEBIAN_FRONTEND=noninteractive apt-get install -y \
-      bind9=1:${BIND_VERSION}* bind9-host=1:${BIND_VERSION}* dnsutils \
+      bind9=1:${BIND_VERSION}* bind9-host=1:${BIND_VERSION}* dnsutils libsocket6-perl \
       webmin=${WEBMIN_VERSION}* \
  && rm -rf /var/lib/apt/lists/*
+
+RUN echo "IPv6=1" >> /etc/webmin/miniserv.conf
 
 COPY entrypoint.sh /sbin/entrypoint.sh
 
